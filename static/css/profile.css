@@ -6,7 +6,8 @@
 
 .profile-header {
     display: flex;
-    gap: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
     justify-content: space-between;
     align-items: flex-start;
     background: white;
@@ -18,9 +19,10 @@
 
 .profile-info {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 20px;
-    align-items: flex-start
+    flex: 1 1 260px;
+    min-width: 0;
 }
 
 .profile-avatar {
@@ -57,12 +59,32 @@
 }
 
 .profile-actions {
-    min-width: 415px;
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     justify-content: flex-end;
+    align-items: center;
+    flex: 0 1 auto;
+    max-width: 100%;
 }
 
 .projects-grid-single {
     grid-template-columns: 1fr;
+}
+
+.profile-projects-heading {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 20px 0 12px 0;
+}
+
+.profile-container > h3.profile-projects-heading:first-of-type {
+    margin-top: 12px;
+}
+
+.profile-projects-empty {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+    grid-column: 1 / -1;
 }

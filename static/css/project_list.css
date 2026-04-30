@@ -156,7 +156,7 @@
     border: 1px solid #ddd;
     border-radius: 12px;
     padding: 20px;
-    width: calc(100% - 36spx);
+    width: calc(100% - 36px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
     flex-direction: column;
     justify-content: space-between;
@@ -190,21 +190,27 @@
     justify-content: space-between;
 }
 
-.skills-filter {
-    margin-top: 20px;
+.skills-filter-card {
+    margin-top: 24px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .filter-label {
+    display: block;
     font-size: 14px;
     color: #555;
-    margin-right: 10px;
+    margin-bottom: 12px;
 }
 
 .filter-chips {
-    display: inline-flex;
+    display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 10px;
+    align-items: center;
 }
 
 .filter-chip {

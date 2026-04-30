@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ project.title }}{% endblock %}
+{% block title %}{{ project.name }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/project_details.css' %}">
@@ -13,7 +13,7 @@
 <div class="project-container">
     <div class="project-card">
         <div class="project-card-header">
-            <a href="/users/{{ project.owner.id }}">
+            <a href="{% url 'users:detail' pk=project.owner.id %}">
                 <div class="project-card-header-left">
                     {% if project.owner.avatar %}
                         <img src="{{ project.owner.avatar.url }}" alt="Аватар автора" class="project-author-avatar">
@@ -53,11 +53,11 @@
         <div class="project-actions">
             <a href="#"
                class="black-button black-button-share share-button"
-               data-url="/projects/{{ project.id }}">
+               data-url="{% url 'projects:detail' pk=project.id %}">
                 {% include 'includes/svg/share.html' %}
             </a>
-            {% if user.id == project.owner.id %}
-                <a href="/projects/{{ project.id }}/edit" class="black-button">
+            {% if request.user.is_authenticated and request.user == project.owner %}
+                <a href="{% url 'projects:edit' pk=project.id %}" class="black-button">
                     {% include 'includes/svg/pen.html' %}
                     Редактировать
                 </a>
@@ -67,7 +67,7 @@
                     </button>
                 {% endif %}
             {% else %}
-                {% if user.is_authenticated %}
+                {% if request.user.is_authenticated %}
                     <button id="participate-btn" class="black-button"
                             data-project="{{ project.id }}"
                             data-user-id="{{ request.user.id }}"
@@ -91,7 +91,7 @@
             {% for skill in project.skills.all %}
                 <span class="skill-chip" data-id="{{ skill.id }}">
                     {{ skill.name }}
-                    {% if project.owner.id == request.user.id %}
+                    {% if request.user.is_authenticated and request.user == project.owner %}
                         <button type="button" class="remove-skill-btn" aria-label="Удалить" title="Удалить">×</button>
                     {% endif %}
                 </span>
@@ -99,7 +99,7 @@
                 <span class="skill-empty">Навыки не указаны</span>
             {% endfor %}
 
-            {% if project.owner.id == request.user.id %}
+            {% if request.user.is_authenticated and request.user == project.owner %}
                 <button type="button" id="add-skill-btn" class="add-skill-btn">+ Добавить навык</button>
             {% endif %}
         </div>
@@ -109,11 +109,12 @@
         </div>
     </div>
 
+    {% if request.user.is_authenticated and request.user == project.owner or request.user.is_staff %}
     <div class="project-participants-card">
     <h3>Участники проекта (<span id="participants-count" style="display:inline">{{ project.participants.all|length }}</span>)</h3>
     <div id="participants-list" class="participants-list">
         {% for member in project.participants.all %}
-        <a href="/users/{{ member.id }}" id="participant-{{ member.id }}">
+        <a href="{% url 'users:detail' pk=member.id %}" id="participant-{{ member.id }}">
             <div class="participant-item">
                 {% if member.avatar %}
                     <img src="{{ member.avatar.url }}" alt="Аватар" class="participant-avatar">
@@ -133,6 +134,7 @@
         {% endfor %}
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
 {% endwith %}

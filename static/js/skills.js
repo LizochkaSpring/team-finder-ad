@@ -1,4 +1,3 @@
-// Profile skills UI logic
 (function(){
   document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("skills-container");
@@ -57,14 +56,14 @@
       }, 200);
     });
 
-    suggestions.addEventListener("mousedown", async (e) => {
+        suggestions.addEventListener("mousedown", async (e) => {
       const li = e.target.closest("li");
       if (!li) return;
 
       if (li.classList.contains("create-new")) {
         await addSkillByName(li.dataset.name);
       } else if (li.dataset.id) {
-        await addSkillById(li.dataset.id);
+        await addSkillById(li.dataset.id, li.textContent.trim());
       }
       hideInput();
     });
@@ -77,7 +76,7 @@
 
         const first = suggestions.querySelector("li");
         if (first && first.dataset.id) {
-          await addSkillById(first.dataset.id);
+          await addSkillById(first.dataset.id, first.textContent.trim());
         } else {
           await addSkillByName(q);
         }
@@ -110,7 +109,7 @@
       }
     });
 
-    async function addSkillById(skillId) {
+    async function addSkillById(skillId, displayName) {
       const res = await fetch(`/projects/${projectId}/skills/add/`, {
         method: "POST",
         headers: {
@@ -119,9 +118,9 @@
         },
         body: JSON.stringify({ skill_id: skillId }),
       });
-      if (res.ok) {
-        const skill = await res.json();
-        appendChip(skill.id, skill.name);
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.added) {
+        appendChip(String(data.skill_id), displayName || data.name || "");
       }
     }
 
@@ -134,9 +133,9 @@
         },
         body: JSON.stringify({ name }),
       });
-      if (res.ok) {
-        const skill = await res.json();
-        appendChip(skill.id, skill.name);
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.added) {
+        appendChip(String(data.skill_id), name);
       }
     }
 
