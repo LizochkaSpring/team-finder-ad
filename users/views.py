@@ -1,10 +1,12 @@
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import DetailView, UpdateView
 from django.views.generic.edit import FormView
 
+from projects.models import Project
 from users.constants import USERS_PER_PAGE
 from users.forms import (
     LoginForm,
@@ -48,10 +50,6 @@ class UserDetailView(DetailView):
     context_object_name = "profile"
 
     def get_context_data(self, **kwargs):
-        from django.db.models import Q
-
-        from projects.models import Project
-
         ctx = super().get_context_data(**kwargs)
         profile = ctx["profile"]
         ctx["profile_projects"] = (

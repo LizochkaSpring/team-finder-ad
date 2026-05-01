@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from decouple import Csv, config
-from django.urls import reverse_lazy
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -103,6 +102,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.User"
 
-LOGIN_URL = reverse_lazy("users:login")
-LOGIN_REDIRECT_URL = reverse_lazy("projects:list")
-LOGOUT_REDIRECT_URL = reverse_lazy("projects:list")
+LOGIN_URL = "users:login"
+LOGIN_REDIRECT_URL = "projects:list"
+LOGOUT_REDIRECT_URL = "projects:list"

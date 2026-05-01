@@ -7,7 +7,7 @@ from projects.views import root_redirect
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", root_redirect),
+    path("", root_redirect, name="root"),
     path("projects/", include("projects.urls")),
     path("users/", include("users.urls")),
 ]

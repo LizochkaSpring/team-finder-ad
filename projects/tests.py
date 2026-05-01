@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from projects.models import Project, Skill
@@ -36,7 +36,7 @@ class ProjectListTests(TestCase):
         self.assertContains(response, self.project.name)
 
     def test_root_redirects_to_project_list(self):
-        response = self.client.get("/")
+        response = self.client.get(reverse("root"))
         self.assertRedirects(response, reverse("projects:list"))
 
     def test_anonymous_cannot_create_project(self):
@@ -66,9 +66,14 @@ class ProjectActionsTests(TestCase):
             status=Project.STATUS_OPEN,
         )
 
+        cls.owner_client = Client()
+        cls.owner_client.force_login(cls.owner)
+
+        cls.other_client = Client()
+        cls.other_client.force_login(cls.other)
+
     def test_owner_can_complete_project(self):
-        self.client.force_login(self.owner)
-        response = self.client.post(
+        response = self.owner_client.post(
             reverse("projects:complete", kwargs={"pk": self.project.pk})
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -76,22 +81,20 @@ class ProjectActionsTests(TestCase):
         self.assertEqual(self.project.status, Project.STATUS_CLOSED)
 
     def test_other_user_cannot_complete_project(self):
-        self.client.force_login(self.other)
-        response = self.client.post(
+        response = self.other_client.post(
             reverse("projects:complete", kwargs={"pk": self.project.pk})
         )
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
     def test_user_can_join_and_leave_project(self):
-        self.client.force_login(self.other)
         url = reverse(
             "projects:toggle_participate", kwargs={"pk": self.project.pk}
         )
-        response = self.client.post(url)
+        response = self.other_client.post(url)
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertTrue(self.project.participants.filter(pk=self.other.pk).exists())
 
-        response = self.client.post(url)
+        response = self.other_client.post(url)
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertFalse(self.project.participants.filter(pk=self.other.pk).exists())
 

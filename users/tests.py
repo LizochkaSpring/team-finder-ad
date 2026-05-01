@@ -1,12 +1,20 @@
-from django.test import Client, TestCase
+from http import HTTPStatus
+
+from django.test import TestCase
 from django.urls import reverse
 
 from users.models import User
 
 
 class UserAuthTests(TestCase):
-    def setUp(self):
-        self.client = Client()
+    @classmethod
+    def setUpTestData(cls):
+        cls.existing_user = User.objects.create_user(
+            email="login@example.com",
+            password="password",
+            name="Логин",
+            surname="Логиныч",
+        )
 
     def test_register_creates_user_and_redirects_to_login(self):
         response = self.client.post(
@@ -22,12 +30,6 @@ class UserAuthTests(TestCase):
         self.assertTrue(User.objects.filter(email="test@example.com").exists())
 
     def test_login_with_valid_credentials_redirects_to_projects(self):
-        User.objects.create_user(
-            email="login@example.com",
-            password="password",
-            name="Логин",
-            surname="Логиныч",
-        )
         response = self.client.post(
             reverse("users:login"),
             data={"email": "login@example.com", "password": "password"},
@@ -39,17 +41,18 @@ class UserAuthTests(TestCase):
             reverse("users:login"),
             data={"email": "noone@example.com", "password": "x"},
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertContains(response, "Неверный")
 
     def test_participants_page_is_public(self):
         response = self.client.get(reverse("users:participants"))
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
 class UserProfileTests(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(
             email="owner@example.com",
             password="password",
             name="Хозяин",
@@ -60,9 +63,9 @@ class UserProfileTests(TestCase):
         response = self.client.get(
             reverse("users:detail", kwargs={"pk": self.user.pk})
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_anonymous_cannot_edit_profile(self):
         response = self.client.get(reverse("users:edit_profile"))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
         self.assertIn(reverse("users:login"), response.url)

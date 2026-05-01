@@ -1,0 +1,90 @@
+{
+    "skills": [
+        "Python",
+        "Django",
+        "PostgreSQL",
+        "Docker",
+        "JavaScript",
+        "React",
+        "TypeScript",
+        "HTML/CSS",
+        "Figma",
+        "Linux"
+    ],
+    "users": [
+        {
+            "email": "alice@example.com",
+            "name": "Алиса",
+            "surname": "Иванова",
+            "about": "Backend-разработчик, увлекаюсь open source.",
+            "phone": "+79990000001",
+            "github_url": "https://github.com/alice",
+            "skills": ["Python", "Django", "PostgreSQL"]
+        },
+        {
+            "email": "bob@example.com",
+            "name": "Борис",
+            "surname": "Петров",
+            "about": "Frontend-разработчик, ищу команду на pet-проект.",
+            "phone": "+79990000002",
+            "github_url": "https://github.com/bob",
+            "skills": ["JavaScript", "React", "TypeScript"]
+        },
+        {
+            "email": "carol@example.com",
+            "name": "Каролина",
+            "surname": "Сидорова",
+            "about": "Дизайнер интерфейсов и немного фронта.",
+            "phone": "+79990000003",
+            "github_url": "https://github.com/carol",
+            "skills": ["Figma", "HTML/CSS"]
+        },
+        {
+            "email": "dan@example.com",
+            "name": "Даниил",
+            "surname": "Кузнецов",
+            "about": "DevOps, Linux, инфраструктура.",
+            "phone": "+79990000004",
+            "github_url": "https://github.com/dan",
+            "skills": ["Docker", "Linux", "PostgreSQL"]
+        }
+    ],
+    "projects": [
+        {
+            "owner_email": "alice@example.com",
+            "name": "Аналитический дашборд",
+            "description": "Сервис, агрегирующий данные из нескольких источников и показывающий метрики в реальном времени.",
+            "github_url": "https://github.com/alice/analytics",
+            "status": "open",
+            "skills": ["Python", "Django", "PostgreSQL"],
+            "participants": ["bob@example.com"]
+        },
+        {
+            "owner_email": "bob@example.com",
+            "name": "Конструктор лендингов",
+            "description": "Drag-and-drop редактор для быстрой сборки посадочных страниц.",
+            "github_url": "https://github.com/bob/landing-builder",
+            "status": "open",
+            "skills": ["React", "TypeScript", "HTML/CSS"],
+            "participants": ["carol@example.com"]
+        },
+        {
+            "owner_email": "carol@example.com",
+            "name": "Дизайн-система TeamFinder",
+            "description": "Унифицированная библиотека UI-компонентов для проекта TeamFinder.",
+            "github_url": "",
+            "status": "closed",
+            "skills": ["Figma", "HTML/CSS"],
+            "participants": []
+        },
+        {
+            "owner_email": "dan@example.com",
+            "name": "CI/CD для pet-проектов",
+            "description": "Шаблоны GitHub Actions и Docker-образов для быстрого старта.",
+            "github_url": "https://github.com/dan/cicd-templates",
+            "status": "open",
+            "skills": ["Docker", "Linux"],
+            "participants": ["alice@example.com"]
+        }
+    ]
+}
