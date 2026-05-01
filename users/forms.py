@@ -4,7 +4,10 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 
-from projects.validators import github_url_validator, normalize_phone_digits
+from projects.form_mixins import GithubUrlCleanMixin
+from projects.validators import normalize_phone_digits
+
+from users.constants import USER_NAME_MAX_LENGTH, USER_SURNAME_MAX_LENGTH
 
 User = get_user_model()
 
@@ -12,8 +15,8 @@ PHONE_PATTERN = re.compile(r"^(?:\+7|8)\d{10}$")
 
 
 class RegisterForm(forms.Form):
-    name = forms.CharField(label="Имя", max_length=124)
-    surname = forms.CharField(label="Фамилия", max_length=124)
+    name = forms.CharField(label="Имя", max_length=USER_NAME_MAX_LENGTH)
+    surname = forms.CharField(label="Фамилия", max_length=USER_SURNAME_MAX_LENGTH)
     email = forms.EmailField(label="Email")
     password = forms.CharField(label="Пароль", widget=forms.PasswordInput)
 
@@ -38,7 +41,7 @@ class LoginForm(forms.Form):
     password = forms.CharField(label="Пароль", widget=forms.PasswordInput)
 
 
-class ProfileEditForm(forms.ModelForm):
+class ProfileEditForm(GithubUrlCleanMixin, forms.ModelForm):
     class Meta:
         model = User
         fields = ("name", "surname", "avatar", "about", "phone", "github_url")
@@ -61,12 +64,6 @@ class ProfileEditForm(forms.ModelForm):
         if taken:
             raise forms.ValidationError("Этот номер уже занят другим пользователем.")
         return normalized
-
-    def clean_github_url(self):
-        value = (self.cleaned_data.get("github_url") or "").strip()
-        if value:
-            github_url_validator(value)
-        return value
 
 
 class UserPasswordChangeForm(PasswordChangeForm):

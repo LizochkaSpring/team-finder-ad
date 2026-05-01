@@ -1,11 +1,11 @@
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.paginator import Paginator
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse
 from django.views.generic import DetailView, UpdateView
 from django.views.generic.edit import FormView
 
+from users.constants import USERS_PER_PAGE
 from users.forms import (
     LoginForm,
     ProfileEditForm,
@@ -13,11 +13,12 @@ from users.forms import (
     UserPasswordChangeForm,
 )
 from users.models import User
+from users.services import paginate_queryset
 
 
 def register_view(request):
     form = RegisterForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
+    if form.is_valid():
         form.save()
         return redirect("users:login")
     return render(request, "users/register.html", {"form": form})
@@ -25,7 +26,7 @@ def register_view(request):
 
 def login_view(request):
     form = LoginForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
+    if form.is_valid():
         email = form.cleaned_data["email"]
         password = form.cleaned_data["password"]
         user = authenticate(request, username=email, password=password)
@@ -63,9 +64,8 @@ class UserDetailView(DetailView):
 
 
 def participants_list(request):
-    qs = User.objects.order_by("-date_joined", "-id")
-    paginator = Paginator(qs, 12)
-    page_obj = paginator.get_page(request.GET.get("page"))
+    queryset = User.objects.order_by("-date_joined", "-id")
+    page_obj = paginate_queryset(request, queryset, USERS_PER_PAGE)
     return render(
         request,
         "users/participants.html",
@@ -82,7 +82,7 @@ class EditProfileView(LoginRequiredMixin, UpdateView):
         return self.request.user
 
     def get_success_url(self):
-        return reverse_lazy("users:detail", kwargs={"pk": self.request.user.pk})
+        return reverse("users:detail", kwargs={"pk": self.request.user.pk})
 
 
 class ChangePasswordView(LoginRequiredMixin, FormView):

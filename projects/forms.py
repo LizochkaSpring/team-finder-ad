@@ -1,11 +1,11 @@
 from django import forms
 
-from projects.validators import github_url_validator
+from projects.form_mixins import GithubUrlCleanMixin
 
 from .models import Project
 
 
-class ProjectForm(forms.ModelForm):
+class ProjectForm(GithubUrlCleanMixin, forms.ModelForm):
     class Meta:
         model = Project
         fields = ("name", "description", "github_url", "status")
@@ -36,14 +36,4 @@ class ProjectForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["status"].choices = [
-            (Project.STATUS_OPEN, "Открыт"),
-            (Project.STATUS_CLOSED, "Закрыт"),
-        ]
-
-    def clean_github_url(self):
-        value = self.cleaned_data.get("github_url") or ""
-        value = value.strip()
-        if value:
-            github_url_validator(value)
-        return value
+        self.fields["status"].choices = Project.STATUS_CHOICES

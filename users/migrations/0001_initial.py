@@ -1,4 +1,4 @@
-import users.models
+import users.managers
 from django.db import migrations, models
 
 
@@ -88,7 +88,7 @@ class Migration(migrations.Migration):
                 "ordering": ["-date_joined"],
             },
             managers=[
-                ("objects", users.models.UserManager()),
+                ("objects", users.managers.UserManager()),
             ],
         ),
     ]

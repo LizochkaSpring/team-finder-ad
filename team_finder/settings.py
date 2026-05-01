@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from decouple import Csv, config
+from django.urls import reverse_lazy
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,7 +42,7 @@ ROOT_URLCONF = "team_finder.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / f"templates_var{config('TASK_VERSION', default='3')}"],
+        "DIRS": [BASE_DIR / "templates_var3"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -102,6 +103,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.User"
 
-LOGIN_URL = "/users/login/"
-LOGIN_REDIRECT_URL = "/projects/list/"
-LOGOUT_REDIRECT_URL = "/projects/list/"
+LOGIN_URL = reverse_lazy("users:login")
+LOGIN_REDIRECT_URL = reverse_lazy("projects:list")
+LOGOUT_REDIRECT_URL = reverse_lazy("projects:list")

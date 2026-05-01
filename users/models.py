@@ -1,51 +1,25 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
 
-
-class UserManager(BaseUserManager):
-    use_in_migrations = True
-
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError("У пользователя должен быть указан email")
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        from users.avatar import build_letter_avatar
-
-        content = build_letter_avatar(user.name or "?")
-        user.avatar.save(content.name, content, save=False)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-        extra_fields.setdefault("is_active", True)
-
-        if extra_fields.get("is_staff") is not True:
-            raise ValueError("Суперпользователь должен иметь is_staff=True.")
-        if extra_fields.get("is_superuser") is not True:
-            raise ValueError("Суперпользователь должен иметь is_superuser=True.")
-
-        if "name" not in extra_fields:
-            extra_fields["name"] = "Admin"
-        if "surname" not in extra_fields:
-            extra_fields["surname"] = "User"
-
-        return self.create_user(email, password, **extra_fields)
+from users.constants import (
+    USER_ABOUT_MAX_LENGTH,
+    USER_NAME_MAX_LENGTH,
+    USER_PHONE_MAX_LENGTH,
+    USER_SURNAME_MAX_LENGTH,
+)
+from users.managers import UserManager
 
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField("email", unique=True)
-    name = models.CharField(max_length=124)
-    surname = models.CharField(max_length=124)
+    name = models.CharField(max_length=USER_NAME_MAX_LENGTH)
+    surname = models.CharField(max_length=USER_SURNAME_MAX_LENGTH)
     avatar = models.ImageField(upload_to="avatars/")
-    phone = models.CharField(max_length=12, blank=True)
+    phone = models.CharField(max_length=USER_PHONE_MAX_LENGTH, blank=True)
     github_url = models.URLField(blank=True)
-    about = models.CharField(max_length=256, blank=True)
+    about = models.CharField(max_length=USER_ABOUT_MAX_LENGTH, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -65,9 +39,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         return f"{self.name} {self.surname}".strip()
-
-    def get_short_name(self):
-        return self.name
 
 
 @receiver(pre_save, sender=User)
